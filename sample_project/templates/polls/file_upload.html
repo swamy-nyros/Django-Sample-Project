@@ -1,0 +1,23 @@
+{% extends "base_index.html" %}
+{% block content %}
+{% load bootstrap %}
+<div class="jumbotron">	
+    <div class="form-group">
+        <form action="{% url 'polls:file_upload' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}  
+           	<input type="file" name="upload_file" >      
+            <button type="submit" class="btn btn-primary" value="Upload" >File_Upload</button>
+        </form>
+    </div>
+    {% if upload_files %}
+        <ul>
+        {% for u_file in upload_files %}
+            <li><a href="{{ u_file.upload_file.url }}">{{ u_file.upload_file.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No uploaded_files.</p>
+    {% endif %}
+</div>   
+{% endblock content %}
+

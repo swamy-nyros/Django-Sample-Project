@@ -1,0 +1,20 @@
+{% extends "base_index.html" %}
+{% block content %}
+{% load bootstrap %}
+<div class="jumbotron">
+    <div calss= "detail2">
+            <div id = "myComment">
+            <div class="form-group">
+                <form action="{% url 'polls:comment' question.id %} " method="POST">
+                    {% csrf_token %}        
+                <ul>
+                    {% for comment_data in data %}
+                    <li ><a href="#">{{ comment_data.comment }} By {{ comment_data.user }}</a></li>   
+                    {% endfor %}            
+                </ul>
+                </form>
+            </div>
+        </div>    
+    </div>
+</div>   
+{% endblock content %}

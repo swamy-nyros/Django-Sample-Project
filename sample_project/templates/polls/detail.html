@@ -1,0 +1,161 @@
+{% extends "base_index.html" %}
+{% block content %}
+{% load bootstrap %}
+<!-- main div start -->
+<div class="jumbotron">
+    <h2>{{ question.question_text }}</h2>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <div class="row">
+        <div class="col-md-4">
+            <form action="{% url 'polls:vote' question.id %}" method="POST" >
+                {% csrf_token %}
+                {% for choice in question.choice_set.all %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+                    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}   --->  {{ choice.votes }}
+                    vote{{ choice.votes|pluralize }}</label><br>                        
+                {% endfor %}     
+                <button type="submit" class="btn btn-primary" value="Vote" >Vote</button>           
+            </form>
+        </div>    
+    </div><br>
+
+    <!-- Comments section  -->
+    <!-- row2 start -->
+    <div class="row2">
+
+    <div class="detail1" >     
+        <h3>Comments Here</h3>
+
+        <form method="POST" id="post_form">
+            {% csrf_token %}
+                <div class="fieldWrapper" id="the_post">
+                    <textarea id="post-comment" name="comment" cols="60" rows="5" placeholder="Enter your comment..." required></textarea><br>
+                </div>
+                <div id="results"></div>
+                <div class="submit"><button type="submit" class="btn btn-primary" value="addcomment" >AddComment</button></div>               
+        </form>
+    </div>
+    <div class="row white" id ="ajax_table_result">
+        <div class="columns large-12">
+            <ul id="talk">
+                {% for post in all_posts %}
+                    <li>
+                        <strong>{{ post.comment }}</strong> -
+                        <em>{{ post.user }}</em> -                        
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if all_posts.has_previous %}
+                <a href="?page={{ all_posts.previous_page_number }}">previous</a>
+            {% endif %}
+            <span class="current">
+                Page {{ all_posts.number }} of {{ all_posts.paginator.num_pages }}.
+            </span>
+            {% if all_posts.has_next %}
+                <a href="?page={{ all_posts.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>    
+    <!-- row2 end -->
+    </div>  
+<!-- main div end -->
+</div>
+
+<!-- main.js  start-->
+<script type="text/javascript">
+
+$(function() {
+
+    // Submit post on submit
+    $('#post_form').on('submit', function(event){
+        event.preventDefault();
+        console.log("form submitted!{{question.id}}" ) 
+        create_post();
+    });
+
+    // AJAX for posting
+    function create_post() {
+        console.log("create post is working!{{question.id}}") 
+        $.ajax({
+            url : "/polls/{{question.id}}/comment/", // the endpoint
+            type : "POST", // http method
+            data : { the_post : $('#post-comment').val() }, // data sent with the post request
+            // handle a successful response
+            success : function(json) {
+                console.log("form submitted! in success")
+                $('#post-comment').val(''); // remove the value from the input
+                console.log(json); // log the returned json to the console
+                $("#talk").prepend("<li><strong>"+json.comment+"</strong> - <em> "+json.user+"</em> ");
+                console.log("success"); // another sanity check
+            },
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log("form submitted! to error")
+                $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    };
+    // This function gets cookie with a given name
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    /*
+    The functions below will create a header with csrftoken
+    */
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+});
+
+</script>
+<!-- main.js  end-->
+
+{% endblock content %}

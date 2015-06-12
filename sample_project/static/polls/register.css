@@ -1,0 +1,26 @@
+body{
+	font-family: arial;
+}
+table {
+	border : 0;
+	width :200px;
+	margin: 100px auto;
+	background-color: #44B78B;
+	height: 400px;
+	width:400px;
+}
+input{
+	margin: :100px auto;
+	width:200px;
+	height: 25px;
+}
+label{
+	color: maroon;
+}
+.submit{
+	width: 100px;
+	height: 30px;
+	font-size: 16px;
+	font-weight: bolder;
+	color:green;
+}

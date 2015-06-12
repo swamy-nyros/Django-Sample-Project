@@ -1,0 +1,18 @@
+{% extends "sample_project/base.html" %}
+{% block content %}
+	<div class="jumbotron">
+		{% if messages %}
+	      <div>
+	        <strong>Messages:</strong>
+	        <ul>
+	        {% for message in messages %}
+	        <li>{{message}}</li>
+	        {% endfor %}
+	        </ul>
+	      </div>
+    	{% endif %}
+		<h1>Profile</h1>
+			{{form.Username}}
+		<p>Your profile for </p>
+	</div>
+{% endblock %}

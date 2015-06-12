@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Sample</title>
+    {% load staticfiles %}   
+    <meta charset='utf-8' />  
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.2/trianglify.min.js"></script>    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">       
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
+</head>
+
+<body>  
+    <div class="container">
+        <div class="masthead">
+            <h3 class="text-muted">Django Sample Project</h3>
+            <nav>
+                <ul class="nav nav-tabs nav-justified">
+                    <li role="presentation" >
+                    <a href="/" >Home</a></li>
+                    <li role="presentation" ><a href="{% url 'admin:index' %}" target ='_blank'>Admin</a></li>
+                    <li role="presentation"><a href="{% url 'polls:index' %}" >Polls</a></li>
+                    {% if user.is_authenticated %}
+                        <li role="presentation"><a href="{% url 'polls:file_upload' %}">File_Upload</a></li>
+                        <li role="presentation"><a href="{% url 'account_email' %}">Change E-mail</a></li>
+                        <li role="presentation"><a href="{% url 'account_logout' %}">Sign Out</a></li> 
+                    {% else %}
+                        <li role="presentation"><a href="/accounts/login/">SignIn</a> </li>
+                        <li role="presentation"><a href="/accounts/signup/">SignUp</a></li>
+                    {% endif %}
+                </ul>   
+            </nav>
+        </div>        
+    {% block content %}
+    {% endblock content%}    
+    </div>       
+</body>
+</html>
